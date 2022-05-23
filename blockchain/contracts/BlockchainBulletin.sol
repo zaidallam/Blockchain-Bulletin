@@ -23,13 +23,22 @@ contract BlockchainBulletin {
         Post[] posts;
     }
 
-    address[] public admins = [msg.sender];
+    address[] public admins;
     Channel[] public channels;
 
     mapping(address => Existence) public adminExistence;
     mapping(bytes32 => Existence) public channelExistence;
     mapping(bytes32 => mapping(bytes32 => Existence)) public postExistence;
     mapping(bytes32 => mapping(address => Existence)) public managerExistence;
+
+    mapping(bytes32 => Channel) public channelFactory;
+
+    constructor() {
+        admins.push(msg.sender);
+        Existence storage existence = adminExistence[msg.sender];
+        existence.exists = true;
+        existence.index = 0;
+    }
 
     modifier adminOnly {
         require(
@@ -72,16 +81,14 @@ contract BlockchainBulletin {
     function createChannel(bytes32 identifier, string calldata description) public adminOnly returns (Channel[] memory) {        
         Existence storage existence = channelExistence[identifier];
 
-        require(existence.exists, "A channel with the provided identifier already exists.");
+        require(!existence.exists, "A channel with the provided identifier already exists.");
         
-        address[] memory managers;
-        managers[0] = msg.sender;
-
+        channels.push(channelFactory[identifier]);
         Channel storage channel = channels[channels.length - 1];
         channel.identifier = identifier;
         channel.timestamp = block.timestamp;
         channel.description = description;
-        channel.managers = managers;
+        channel.managers.push(msg.sender);
         
         existence.exists = true;
         existence.index = channels.length - 1;
