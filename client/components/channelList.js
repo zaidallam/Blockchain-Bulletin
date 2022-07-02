@@ -20,7 +20,7 @@ export default function ChannelList({ channels, isAdmin }) {
     return (
         <div className="flex flex-row flex-wrap">
             {channels.map(channel => (
-                <ChannelCard deleteChannel={deleteChannel} identifier={channel[0]} managers={channel[3]} description={channel[2]} numPosts={channel[4].length} timestamp={channel[1].toNumber()} isAdmin={isAdmin} />
+                <ChannelCard key={channel[0]} deleteChannel={deleteChannel} identifier={channel[0]} managers={channel[3]} description={channel[2]} numPosts={channel[4].length} timestamp={channel[1].toNumber()} isAdmin={isAdmin} />
             ))}
         </div>
     )
